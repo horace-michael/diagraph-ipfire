@@ -8,12 +8,39 @@ A minimalist, high-performance Bash utility designed to parse, map, and visualiz
 **Architects:** H&M  
 **Developers:** H&M and Gemini (v1.0.0) | H&M and Claude Sonnet 4.6 (v1.0.1+)
 
+## Visualization preview
+
+The default output is a PCB-style top-to-bottom chain map. Every Netfilter stage is visible — dispatch wrappers, serial chain execution order, and packet traversal paths overlaid as orange arrows.
+
+![IPFire Firewall Chain Map v1.5.0 — TB layout](doc/ipfire_pcb_firewall_core200_v1.5.0_TB.png)
+
+> Rendered with `dot -Tpng -Gdpi=120 -Grankdir=TB`. See [doc/USAGE.md](doc/USAGE.md) for full rendering instructions.
+
 ## Features
 
 * **Global Unified Map**: Interrogates all primary Netfilter tables (`raw`, `mangle`, `nat`, `filter`, `security`) simultaneously, grouping root chains and sub-chains into clean visual clusters.
 * **Packet Traversal Skeleton**: The three Netfilter packet paths (incoming, forwarded, locally generated) are overlaid as orange arrows with routing decision diamonds, following the packet flow as documented in the Linux kernel Netfilter subsystem.
-* **Sequential Chain Flows**: Maps execution order within each root chain — the sub-chains are linked in the order the kernel processes them.
+* **Dispatcher vs Filter Classification**: Root hooks (`INPUT`, `FORWARD`, `OUTPUT`) that act as pure dispatchers are rendered as bold wrapper nodes, visually distinct from chains containing actual match rules.
+* **Sequential Chain Flows**: Maps execution order within each root chain — the sub-chains are linked in the exact order the kernel processes them.
 * **Contextual Isolation**: Generates `.dot` graph files renderable by Graphviz (`dot` tool) into high-resolution PNG assets.
+
+## Quick start
+
+```bash
+# 1. Copy script to IPFire box
+scp -p src/ipfire_firewall_vizualizer.sh root@ipfire:/tmp/ipfire_firewall_vizualizer.sh
+
+# 2. Run on IPFire (root required for iptables-save)
+ssh root@ipfire "cd /tmp && bash /tmp/ipfire_firewall_vizualizer.sh"
+
+# 3. Fetch the generated .dot file
+scp root@ipfire:/tmp/ipfire_pcb_firewall_core<N>.dot templates/
+
+# 4. Render to PNG on your workstation
+dot -Tpng -Gdpi=120 -Grankdir=TB templates/ipfire_pcb_firewall_core<N>.dot -o firewall.png
+```
+
+Full deployment guide, CLI reference, and rendering options: **[doc/USAGE.md](doc/USAGE.md)**
 
 ## Netfilter Packet Traversal
 
@@ -63,12 +90,11 @@ LOCAL PROCESS
 diagraph-ipfire/
 ├── .gitattributes                    # Enforces LF line endings for shell scripts
 ├── .gitignore                        # Excludes volatile files and local AI context
-├── bin/
-│   └── ipfire_firewall_vizualizer.sh # Main script — runs on the IPFire box (root required)
-└── templates/                        # Committed snapshots from live system
-    ├── ipfire_unified_firewall_core197.dot
-    ├── ipfire_unified_firewall_core200.dot
-    └── ipfire_unified_firewall_core200_150DPI_LR.png
+├── doc/
+│   ├── USAGE.md                      # Deployment, rendering, and CLI reference
+│   └── ipfire_pcb_firewall_core200_v1.5.0_TB.png   # Reference render (TB layout)
+└── src/
+    └── ipfire_firewall_vizualizer.sh # Main script — runs on the IPFire box (root required)
 ```
 
 ## Dependencies
@@ -79,24 +105,8 @@ diagraph-ipfire/
 
 ```bash
 sudo apt install graphviz          # Debian/Ubuntu/Mint
-
-# Render a snapshot (LR layout recommended)
-dot -Tpng -Gdpi=150 -Grankdir=LR \
-    templates/ipfire_unified_firewall_core200.dot \
-    -o ipfire_unified_firewall_core200_LR.png
 ```
 
-## Deployment
-
-```bash
-# Push script to IPFire box
-scp -p bin/ipfire_firewall_vizualizer.sh ipfire:/root/firewall_diagraph/ipfire_firewall_vizualizer.sh
-
-# Run on the box (generates .dot; Graphviz not needed on IPFire itself)
-ssh ipfire "cd /root/firewall_diagraph && bash ipfire_firewall_vizualizer.sh"
-
-# Fetch result back for local rendering
-scp ipfire:/root/firewall_diagraph/ipfire_unified_firewall_*.dot templates/
-```
+See [doc/USAGE.md](doc/USAGE.md) for full rendering options including DPI guidance and layout variants.
 
 ---

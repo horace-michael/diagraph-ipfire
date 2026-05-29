@@ -44,7 +44,7 @@ run_qa_pipeline() {
 
     local test_machine debug log_prefix script_file release_file core version base_dot tgt_dot tgt_png
     
-    test_machine="${1:-gtw}"
+    test_machine="${1:-ipfire-qa}"
     debug=true
     log_prefix="[QA-PIPELINE]"
     script_file="src/ipfire_firewall_vizualizer.sh"
