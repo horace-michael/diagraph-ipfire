@@ -70,17 +70,18 @@ run_qa_pipeline() {
     fi
     
     logger -t "ipfire-qa" "${log_prefix} Syncing firewall visualization tools with ${test_machine}"
-    scp -p src/ipfire_firewall_vizualizer.sh "${test_machine}":/root/firewall_diagraph/
-    
+    scp -p src/ipfire_firewall_vizualizer.sh "${test_machine}":/tmp/ipfire_firewall_vizualizer.sh
+
     if [[ "${debug}" == true ]]; then
         printf "%s Triggering remote script processing execution loop on %s...\n" "${log_prefix}" "${test_machine}"
     fi
-    ssh "${test_machine}" "/root/firewall_diagraph/ipfire_firewall_vizualizer.sh"
-    
+    ssh "${test_machine}" "cd /tmp && bash /tmp/ipfire_firewall_vizualizer.sh"
+
     if [[ "${debug}" == true ]]; then
         printf "%s Pulling intermediate data trace matrix from %s to local space...\n" "${log_prefix}" "${test_machine}"
     fi
-    scp -p "${test_machine}:/root/firewall_diagraph/ipfire_pcb_firewall_${core}.dot" "${base_dot}"
+    scp -p "${test_machine}:/tmp/ipfire_pcb_firewall_${core}.dot" "${base_dot}"
+    ssh "${test_machine}" "rm -f /tmp/ipfire_firewall_vizualizer.sh /tmp/ipfire_pcb_firewall_${core}.dot"
     
     if [[ "${debug}" == true ]]; then
         printf "%s Building visual topography layouts using portrait configuration metrics...\n" "${log_prefix}"

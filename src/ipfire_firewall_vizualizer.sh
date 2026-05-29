@@ -509,7 +509,7 @@ generate_pcb_map() {
         printf '\n'
 
         # --- Security footnote ---
-        printf "  \"SEC_NOTE\" [label=\"(Generated on IPFire Core Update \${core}. Note: security table omitted\\\\n\xe2\x80\x94 empty on this system)\", shape=note, fillcolor=\"#F5F5F5\", color=grey, fontsize=9];\n"
+        printf "  \"SEC_NOTE\" [label=\"(Generated on IPFire %s. Note: security table omitted\\\\n\xe2\x80\x94 empty on this system)\", shape=note, fillcolor=\"#F5F5F5\", color=grey, fontsize=9];\n" "${core}"
         printf '\n'
 
         # --- PREROUTING flow: NET_IN → raw chains → mangle_PRE → nat_PRE → junc_split ---
