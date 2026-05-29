@@ -1,0 +1,41 @@
+# IDE, Editor and OS Files
+.vscode/
+.history/
+.DS_Store
+config/.DS_Store
+*~
+*.bak
+*.bak.*
+*.tmp
+
+# Python Artifacts
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+var/log/*.log
+
+# Build Artifacts & Staging
+build/
+templates/
+src_staging/
+files.tar.xz
+*.ipfire
+*.sha256
+ROOTFILES
+*.tar.xz
+
+# Data Snapshots & Local Databases
+**/Snapshots/*.json
+*_v*_HW_inventory_master.json
+
+# Environment Secrets
+.env
+CLAUDE.md
+
+
+# Security Boundaries
+.config/
+**/config.yml
+**/tea.conf
